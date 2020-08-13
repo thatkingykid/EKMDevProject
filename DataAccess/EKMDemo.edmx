@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="EKMDemoModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="EKMDemoModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Auth">
           <Key>
             <PropertyRef Name="ID" />
@@ -14,11 +14,13 @@
         </EntityType>
         <EntityType Name="Cart">
           <Key>
-            <PropertyRef Name="SessionID" />
+            <PropertyRef Name="ID" />
           </Key>
           <Property Name="SessionID" Type="uniqueidentifier" Nullable="false" />
           <Property Name="UserID" Type="int" />
           <Property Name="ItemID" Type="int" />
+          <Property Name="Quantity" Type="int" Nullable="false" />
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
         </EntityType>
         <EntityType Name="Item">
           <Key>
@@ -29,6 +31,15 @@
           <Property Name="CommonCode" Type="varchar" MaxLength="8" Nullable="false" />
           <Property Name="Price" Type="decimal" Precision="12" Scale="2" Nullable="false" />
           <Property Name="Stock" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Orders">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CartID" Type="uniqueidentifier" />
+          <Property Name="TotalValue" Type="decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="UserID" Type="int" />
         </EntityType>
         <EntityType Name="SysUser">
           <Key>
@@ -63,6 +74,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK__Orders__UserID__6A30C649">
+          <End Role="SysUser" Type="Self.SysUser" Multiplicity="0..1" />
+          <End Role="Orders" Type="Self.Orders" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SysUser">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Orders">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK__SysUser__AuthID__6477ECF3">
           <End Role="Auth" Type="Self.Auth" Multiplicity="0..1" />
           <End Role="SysUser" Type="Self.SysUser" Multiplicity="*" />
@@ -79,6 +102,7 @@
           <EntitySet Name="Auth" EntityType="Self.Auth" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Cart" EntityType="Self.Cart" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Item" EntityType="Self.Item" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Orders" EntityType="Self.Orders" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SysUser" EntityType="Self.SysUser" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK__Cart__ItemID__6383C8BA" Association="Self.FK__Cart__ItemID__6383C8BA">
             <End Role="Item" EntitySet="Item" />
@@ -88,59 +112,98 @@
             <End Role="SysUser" EntitySet="SysUser" />
             <End Role="Cart" EntitySet="Cart" />
           </AssociationSet>
+          <AssociationSet Name="FK__Orders__UserID__6A30C649" Association="Self.FK__Orders__UserID__6A30C649">
+            <End Role="SysUser" EntitySet="SysUser" />
+            <End Role="Orders" EntitySet="Orders" />
+          </AssociationSet>
           <AssociationSet Name="FK__SysUser__AuthID__6477ECF3" Association="Self.FK__SysUser__AuthID__6477ECF3">
             <End Role="Auth" EntitySet="Auth" />
             <End Role="SysUser" EntitySet="SysUser" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="EKMDemoModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="EKMDemoEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Auths" EntityType="EKMDemoModel.Auth" />
+          <EntitySet Name="Carts" EntityType="EKMDemoModel.Cart" />
+          <EntitySet Name="Items" EntityType="EKMDemoModel.Item" />
+          <EntitySet Name="Orders" EntityType="EKMDemoModel.Order" />
+          <EntitySet Name="SysUsers" EntityType="EKMDemoModel.SysUser" />
+          <AssociationSet Name="FK__SysUser__AuthID__6477ECF3" Association="EKMDemoModel.FK__SysUser__AuthID__6477ECF3">
+            <End Role="Auth" EntitySet="Auths" />
+            <End Role="SysUser" EntitySet="SysUsers" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Cart__ItemID__6383C8BA" Association="EKMDemoModel.FK__Cart__ItemID__6383C8BA">
+            <End Role="Item" EntitySet="Items" />
+            <End Role="Cart" EntitySet="Carts" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Cart__UserID__628FA481" Association="EKMDemoModel.FK__Cart__UserID__628FA481">
+            <End Role="SysUser" EntitySet="SysUsers" />
+            <End Role="Cart" EntitySet="Carts" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Orders__UserID__6A30C649" Association="EKMDemoModel.FK__Orders__UserID__6A30C649">
+            <End Role="SysUser" EntitySet="SysUsers" />
+            <End Role="Order" EntitySet="Orders" />
+          </AssociationSet>
+        </EntityContainer>
         <EntityType Name="Auth">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="AuthType" Type="String" MaxLength="32" FixedLength="false" Unicode="false" Nullable="false" />
-          <NavigationProperty Name="SysUsers" Relationship="Self.FK__SysUser__AuthID__6477ECF3" FromRole="Auth" ToRole="SysUser" />
+          <Property Name="AuthType" Type="String" Nullable="false" MaxLength="32" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="SysUsers" Relationship="EKMDemoModel.FK__SysUser__AuthID__6477ECF3" FromRole="Auth" ToRole="SysUser" />
         </EntityType>
         <EntityType Name="Cart">
           <Key>
-            <PropertyRef Name="SessionID" />
+            <PropertyRef Name="ID" />
           </Key>
           <Property Name="SessionID" Type="Guid" Nullable="false" />
           <Property Name="UserID" Type="Int32" />
           <Property Name="ItemID" Type="Int32" />
-          <NavigationProperty Name="Item" Relationship="Self.FK__Cart__ItemID__6383C8BA" FromRole="Cart" ToRole="Item" />
-          <NavigationProperty Name="SysUser" Relationship="Self.FK__Cart__UserID__628FA481" FromRole="Cart" ToRole="SysUser" />
+          <Property Name="Quantity" Type="Int32" Nullable="false" />
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <NavigationProperty Name="Item" Relationship="EKMDemoModel.FK__Cart__ItemID__6383C8BA" FromRole="Cart" ToRole="Item" />
+          <NavigationProperty Name="SysUser" Relationship="EKMDemoModel.FK__Cart__UserID__628FA481" FromRole="Cart" ToRole="SysUser" />
         </EntityType>
         <EntityType Name="Item">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" MaxLength="512" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="CommonCode" Type="String" MaxLength="8" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Price" Type="Decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="512" FixedLength="false" Unicode="false" />
+          <Property Name="CommonCode" Type="String" Nullable="false" MaxLength="8" FixedLength="false" Unicode="false" />
+          <Property Name="Price" Type="Decimal" Nullable="false" Precision="12" Scale="2" />
           <Property Name="Stock" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Carts" Relationship="Self.FK__Cart__ItemID__6383C8BA" FromRole="Item" ToRole="Cart" />
+          <NavigationProperty Name="Carts" Relationship="EKMDemoModel.FK__Cart__ItemID__6383C8BA" FromRole="Item" ToRole="Cart" />
+        </EntityType>
+        <EntityType Name="Order">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CartID" Type="Guid" />
+          <Property Name="TotalValue" Type="Decimal" Nullable="false" Precision="12" Scale="2" />
+          <Property Name="UserID" Type="Int32" />
+          <NavigationProperty Name="SysUser" Relationship="EKMDemoModel.FK__Orders__UserID__6A30C649" FromRole="Order" ToRole="SysUser" />
         </EntityType>
         <EntityType Name="SysUser">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Username" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Password" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Username" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Password" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="AuthID" Type="Int32" />
-          <NavigationProperty Name="Auth" Relationship="Self.FK__SysUser__AuthID__6477ECF3" FromRole="SysUser" ToRole="Auth" />
-          <NavigationProperty Name="Carts" Relationship="Self.FK__Cart__UserID__628FA481" FromRole="SysUser" ToRole="Cart" />
+          <NavigationProperty Name="Auth" Relationship="EKMDemoModel.FK__SysUser__AuthID__6477ECF3" FromRole="SysUser" ToRole="Auth" />
+          <NavigationProperty Name="Carts" Relationship="EKMDemoModel.FK__Cart__UserID__628FA481" FromRole="SysUser" ToRole="Cart" />
+          <NavigationProperty Name="Orders" Relationship="EKMDemoModel.FK__Orders__UserID__6A30C649" FromRole="SysUser" ToRole="Order" />
         </EntityType>
         <Association Name="FK__SysUser__AuthID__6477ECF3">
-          <End Role="Auth" Type="Self.Auth" Multiplicity="0..1" />
-          <End Role="SysUser" Type="Self.SysUser" Multiplicity="*" />
+          <End Type="EKMDemoModel.Auth" Role="Auth" Multiplicity="0..1" />
+          <End Type="EKMDemoModel.SysUser" Role="SysUser" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Auth">
               <PropertyRef Name="ID" />
@@ -151,8 +214,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK__Cart__ItemID__6383C8BA">
-          <End Role="Item" Type="Self.Item" Multiplicity="0..1" />
-          <End Role="Cart" Type="Self.Cart" Multiplicity="*" />
+          <End Type="EKMDemoModel.Item" Role="Item" Multiplicity="0..1" />
+          <End Type="EKMDemoModel.Cart" Role="Cart" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Item">
               <PropertyRef Name="ID" />
@@ -163,8 +226,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK__Cart__UserID__628FA481">
-          <End Role="SysUser" Type="Self.SysUser" Multiplicity="0..1" />
-          <End Role="Cart" Type="Self.Cart" Multiplicity="*" />
+          <End Type="EKMDemoModel.SysUser" Role="SysUser" Multiplicity="0..1" />
+          <End Type="EKMDemoModel.Cart" Role="Cart" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="SysUser">
               <PropertyRef Name="ID" />
@@ -174,25 +237,19 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="EKMDemoEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Auths" EntityType="Self.Auth" />
-          <EntitySet Name="Carts" EntityType="Self.Cart" />
-          <EntitySet Name="Items" EntityType="Self.Item" />
-          <EntitySet Name="SysUsers" EntityType="Self.SysUser" />
-          <AssociationSet Name="FK__SysUser__AuthID__6477ECF3" Association="Self.FK__SysUser__AuthID__6477ECF3">
-            <End Role="Auth" EntitySet="Auths" />
-            <End Role="SysUser" EntitySet="SysUsers" />
-          </AssociationSet>
-          <AssociationSet Name="FK__Cart__ItemID__6383C8BA" Association="Self.FK__Cart__ItemID__6383C8BA">
-            <End Role="Item" EntitySet="Items" />
-            <End Role="Cart" EntitySet="Carts" />
-          </AssociationSet>
-          <AssociationSet Name="FK__Cart__UserID__628FA481" Association="Self.FK__Cart__UserID__628FA481">
-            <End Role="SysUser" EntitySet="SysUsers" />
-            <End Role="Cart" EntitySet="Carts" />
-          </AssociationSet>
-        </EntityContainer>
-      </Schema>
+        <Association Name="FK__Orders__UserID__6A30C649">
+          <End Type="EKMDemoModel.SysUser" Role="SysUser" Multiplicity="0..1" />
+          <End Type="EKMDemoModel.Order" Role="Order" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SysUser">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Order">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -201,38 +258,50 @@
           <EntitySetMapping Name="Auths">
             <EntityTypeMapping TypeName="EKMDemoModel.Auth">
               <MappingFragment StoreEntitySet="Auth">
-                <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="AuthType" ColumnName="AuthType" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Carts">
             <EntityTypeMapping TypeName="EKMDemoModel.Cart">
               <MappingFragment StoreEntitySet="Cart">
-                <ScalarProperty Name="SessionID" ColumnName="SessionID" />
-                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
                 <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="SessionID" ColumnName="SessionID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Items">
             <EntityTypeMapping TypeName="EKMDemoModel.Item">
               <MappingFragment StoreEntitySet="Item">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="CommonCode" ColumnName="CommonCode" />
-                <ScalarProperty Name="Price" ColumnName="Price" />
                 <ScalarProperty Name="Stock" ColumnName="Stock" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="CommonCode" ColumnName="CommonCode" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Orders">
+            <EntityTypeMapping TypeName="EKMDemoModel.Order">
+              <MappingFragment StoreEntitySet="Orders">
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="TotalValue" ColumnName="TotalValue" />
+                <ScalarProperty Name="CartID" ColumnName="CartID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="SysUsers">
             <EntityTypeMapping TypeName="EKMDemoModel.SysUser">
               <MappingFragment StoreEntitySet="SysUser">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Username" ColumnName="Username" />
-                <ScalarProperty Name="Password" ColumnName="Password" />
                 <ScalarProperty Name="AuthID" ColumnName="AuthID" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

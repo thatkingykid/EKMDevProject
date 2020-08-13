@@ -5,13 +5,15 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="6399ae96c5874d67b59c502a4d46f583" Name="Diagram1">
-        <EntityTypeShape EntityType="EKMDemoModel.Auth" Width="1.5" PointX="0.75" PointY="1.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="EKMDemoModel.Cart" Width="1.5" PointX="5.25" PointY="1" IsExpanded="true" />
-        <EntityTypeShape EntityType="EKMDemoModel.Item" Width="1.5" PointX="3" PointY="4.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="EKMDemoModel.SysUser" Width="1.5" PointX="3" PointY="0.875" IsExpanded="true" />
-        <AssociationConnector Association="EKMDemoModel.FK__SysUser__AuthID__6477ECF3" ManuallyRouted="false" />
-        <AssociationConnector Association="EKMDemoModel.FK__Cart__ItemID__6383C8BA" ManuallyRouted="false" />
-        <AssociationConnector Association="EKMDemoModel.FK__Cart__UserID__628FA481" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="EKMDemoModel.Auth" Width="1.5" PointX="0.75" PointY="2.875" />
+        <EntityTypeShape EntityType="EKMDemoModel.Cart" Width="1.5" PointX="5.25" PointY="2.5" />
+        <EntityTypeShape EntityType="EKMDemoModel.Item" Width="1.5" PointX="3" PointY="7.5" />
+        <EntityTypeShape EntityType="EKMDemoModel.Order" Width="1.5" PointX="5.25" PointY="5.75" />
+        <EntityTypeShape EntityType="EKMDemoModel.SysUser" Width="1.5" PointX="3" PointY="2.5" />
+        <AssociationConnector Association="EKMDemoModel.FK__SysUser__AuthID__6477ECF3" />
+        <AssociationConnector Association="EKMDemoModel.FK__Cart__ItemID__6383C8BA" />
+        <AssociationConnector Association="EKMDemoModel.FK__Cart__UserID__628FA481" />
+        <AssociationConnector Association="EKMDemoModel.FK__Orders__UserID__6A30C649" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

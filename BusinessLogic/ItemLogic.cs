@@ -30,6 +30,14 @@ namespace BusinessLogic
             }
         }
 
+        public List<Item> GetAllItems()
+        {
+            using (EKMDemoEntities context = new EKMDemoEntities())
+            {
+                return new List<Item>(context.Items);
+            }
+        }
+
         /// <summary>
         /// Returns an item based on a provided ID
         /// </summary>
@@ -118,7 +126,7 @@ namespace BusinessLogic
         /// Given an item ID, updates the number of stock for a given item
         /// </summary>
         /// <exception cref="RequestErrorException">Throws if id provided does not map to a database object</exception>
-        public void ChangeStockForItem(int itemID, int newStock)
+        public int AddStockToItem(int itemID, int stockToAdd)
         {
             using (EKMDemoEntities context = new EKMDemoEntities())
             {
@@ -127,8 +135,27 @@ namespace BusinessLogic
                     throw new RequestErrorException("Item cannot be found");
                 else
                 {
-                    item.Stock += newStock;
+                    item.Stock += stockToAdd;
                     context.SaveChanges();
+                    return item.Stock;
+                }
+            }
+        }
+
+        public int ReduceItemStock(int itemID, int stockToRemove)
+        {
+            using (EKMDemoEntities context = new EKMDemoEntities())
+            {
+                var item = context.Items.Find(itemID);
+                if (item == null)
+                    throw new RequestErrorException("Item cannot be found");
+                else
+                {
+                    if (item.Stock - stockToRemove < 0)
+                        throw new RequestErrorException("Cannot reduce stock to negative quantity");
+                    item.Stock -= stockToRemove;
+                    context.SaveChanges();
+                    return item.Stock;
                 }
             }
         }

@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CartLogic.cs" />
     <Compile Include="ItemLogic.cs" />
     <Compile Include="RequestErrorException.cs" />
     <Compile Include="UserLogic.cs" />

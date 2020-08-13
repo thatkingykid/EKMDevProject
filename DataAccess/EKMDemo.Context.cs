@@ -28,6 +28,7 @@ namespace DataAccess
         public virtual DbSet<Auth> Auths { get; set; }
         public virtual DbSet<Cart> Carts { get; set; }
         public virtual DbSet<Item> Items { get; set; }
+        public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<SysUser> SysUsers { get; set; }
     }
 }

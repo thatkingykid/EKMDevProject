@@ -12,15 +12,13 @@ namespace DataAccess
     using System;
     using System.Collections.Generic;
     
-    public partial class Cart
+    public partial class Order
     {
-        public System.Guid SessionID { get; set; }
-        public Nullable<int> UserID { get; set; }
-        public Nullable<int> ItemID { get; set; }
-        public int Quantity { get; set; }
         public int ID { get; set; }
+        public Nullable<System.Guid> CartID { get; set; }
+        public decimal TotalValue { get; set; }
+        public Nullable<int> UserID { get; set; }
     
-        public virtual Item Item { get; set; }
         public virtual SysUser SysUser { get; set; }
     }
 }
