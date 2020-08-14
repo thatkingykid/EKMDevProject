@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BusinessLogic;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -13,18 +14,35 @@ namespace EKMDevProject.Controllers
             return View();
         }
 
-        public ActionResult About()
+        public ActionResult RedirectUser()
         {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-
-            return View();
+            try
+            {
+                var userLogic = new UserLogic();
+                if (Session["UserID"] == null)
+                {
+                    return RedirectToAction("Index", "Login");
+                }
+                var user = userLogic.GetUserByID((int)Session["UserID"]);
+                if(user.Auth.AuthType == "Admin")
+                {
+                    return RedirectToAction("Index", "Admin");
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Customer");
+                }
+            }
+            catch (RequestErrorException e)
+            {
+                Response.StatusCode = 400;
+                return Json(new { e.Message }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                Response.StatusCode = 500;
+                return Json(new { e.Message }, JsonRequestBehavior.AllowGet);
+            }
         }
     }
 }

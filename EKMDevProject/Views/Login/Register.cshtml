@@ -1,0 +1,35 @@
+﻿@model EKMDevProject.Models.Login.RegisterViewModel
+@{
+    Layout = null;
+}
+
+@using (Ajax.BeginForm("Register", "Login", null, new AjaxOptions { HttpMethod = "POST", OnSuccess = "RegisterSuccess", OnFailure = "RegisterFailure" }, new { @class = "form-horizontal", role = "form" }))
+{
+    <div class="col-xs-12">
+        <h2>Register</h2>
+        <div class="row">
+            @Html.TextBoxFor(x => x.Username, new { @class = "form-control", @autocomplete = "off", @placeholder = "Username" })
+            @Html.ValidationMessageFor(x => x.Username, null, new { @class = "text-danger" })
+        </div>
+        <br />
+        <div class="row">
+            @Html.TextBoxFor(x => x.Password, new { @class = "form-control", @autocomplete = "off", @placeholder = "Password", @type = "password" })
+            @Html.ValidationMessageFor(x => x.Password, null, new { @class = "text-danger" })
+        </div>
+        <br />
+        <div class="row">
+            @Html.TextBoxFor(x => x.ConfirmPassword, new { @class = "form-control", @autocomplete = "off", @placeholder = "Confirm Password", @type = "password" })
+            @Html.ValidationMessageFor(x => x.Password, null, new { @class = "text-danger" })
+        </div>
+        <br />
+        <div class="row">
+            @Html.DropDownList("AuthType", (IEnumerable<SelectListItem>)ViewBag.Auth, "Please select a security level", new { @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.AuthType, null, new { @class = "text-danger" })
+        </div>
+        <br />
+        <div class="row">
+            <input type="submit" class="btn btn-success" value="Register" />
+        </div>
+    </div>
+}
+@Scripts.Render("~/bundles/jqueryval")

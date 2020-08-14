@@ -1,0 +1,31 @@
+﻿@model EKMDevProject.Models.Login.LoginViewModel
+@{
+    ViewBag.Title = "Login";
+    Layout = null;
+}
+
+<div class="col-xs-12">
+    @using (Ajax.BeginForm("Login", "Login", null, new AjaxOptions { HttpMethod = "POST", OnSuccess = "LoginSuccess", OnFailure = "LoginFailure" }, new { @class = "form-horizontal", role = "form" }))
+    {
+        <h2>Login</h2>
+        <br />
+        <div class="row">
+            @Html.TextBoxFor(x => x.Username, new { @class = "form-control", @autocomplete = "off", @placeholder = "Username" })
+            @Html.ValidationMessageFor(x => x.Username, null, new { @class = "text-danger" })
+        </div>
+        <br />
+        <div class="row">
+            @Html.TextBoxFor(x => x.Password, new { @class = "form-control", @autocomplete = "off", @placeholder = "Password", @type = "password" })
+            @Html.ValidationMessageFor(x => x.Password, null, new { @class = "text-danger" })
+        </div>
+        <br />
+        <div class="row">
+            <input type="submit" class="btn btn-default" style="justify-self: center;" value="Login" />
+        </div>
+    }
+    <br />
+    <div class="row">
+        <button class="btn btn-info" id="register">Register</button>
+    </div>
+</div>
+@Scripts.Render("~/bundles/jqueryval")

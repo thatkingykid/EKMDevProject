@@ -38,12 +38,11 @@ namespace BusinessLogicUnitTests
         }
 
         [TestMethod]
-        public void UsernameCounterDoesUpdate()
+        [ExpectedException(typeof(RequestErrorException))]
+        public void DuplicateUserName()
         {
             var userLogic = new UserLogic();
-            var user = userLogic.CreateNewUser("testCustomer", "password123", UserLogic.AuthType.Customer);
-            var lastChar = user.Username.Substring(user.Username.Length - 1, 1);
-            Assert.IsTrue(int.TryParse(lastChar, out _));
+            userLogic.CreateNewUser("testCustomer", "password123", UserLogic.AuthType.Customer);
         }
 
         [TestMethod]
@@ -51,7 +50,7 @@ namespace BusinessLogicUnitTests
         {
             var userLogic = new UserLogic();
             var result = userLogic.Login("bingo bob", "sillygoose");
-            Assert.IsFalse(result);
+            Assert.IsTrue(result == 0);
         }
 
         [TestMethod]
@@ -59,7 +58,7 @@ namespace BusinessLogicUnitTests
         {
             var userLogic = new UserLogic();
             var result = userLogic.Login("testAdmin", "sillygoose");
-            Assert.IsFalse(result);
+            Assert.IsTrue(result == 0);
         }
 
         [TestMethod]
@@ -67,7 +66,7 @@ namespace BusinessLogicUnitTests
         {
             var userLogic = new UserLogic();
             var result = userLogic.Login("testAdmin", "password123");
-            Assert.IsTrue(result);
+            Assert.IsTrue(result == 0);
         }
     }
 }

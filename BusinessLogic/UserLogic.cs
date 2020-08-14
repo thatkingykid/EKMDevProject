@@ -1,6 +1,7 @@
 ﻿using DataAccess;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,10 +33,7 @@ namespace BusinessLogic
 
                 var existingUser = context.SysUsers.FirstOrDefault(x => x.Username == user);
                 if (existingUser != null)
-                {
-                    var count = context.SysUsers.Where(x => x.Username.Contains(user)).Count();
-                    user += count.ToString();
-                }
+                    throw new RequestErrorException("Username already exists!");
 
                 var userEntity = new SysUser
                 {
@@ -53,15 +51,27 @@ namespace BusinessLogic
         /// Given a username and password, will attempt to match them to a record in the SysUser database
         /// </summary>
         /// <returns>Bool indicating whether login was successful or not</returns>
-        public bool Login(string userName, string password)
+        public int Login(string userName, string password)
         {
             using (EKMDemoEntities context = new EKMDemoEntities())
             {
                 var user = context.SysUsers.FirstOrDefault(x => x.Username == userName);
                 if (user == null || user.Password != password)
-                    return false;
+                    return 0;
                 else
-                    return true;
+                    return user.ID;
+            }
+        }
+
+        public SysUser GetUserByID(int id)
+        {
+            using (EKMDemoEntities context = new EKMDemoEntities())
+            {
+                var user = context.SysUsers.Where(x => x.ID == id).Include("Auth").FirstOrDefault();
+                if (user == null)
+                    throw new RequestErrorException("User ID is not valid");
+                else
+                    return user;
             }
         }
     }
