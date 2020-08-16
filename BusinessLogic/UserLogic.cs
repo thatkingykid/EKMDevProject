@@ -12,9 +12,16 @@ namespace BusinessLogic
     {
         public enum AuthType
         {
-            Customer, 
+            Customer,
             Admin,
             TotallyNotRealAuthType
+        }
+
+        private EKMDemoEntities context = null;
+
+        public UserLogic(EKMDemoEntities contextObj = null)
+        {
+            context = contextObj;
         }
 
         /// <summary>
@@ -25,26 +32,27 @@ namespace BusinessLogic
         /// <exception cref="RequestErrorException">Thrown when AuthType is not a valid selection</exception>
         public SysUser CreateNewUser(string user, string password, AuthType authType)
         {
-            using (EKMDemoEntities context = new EKMDemoEntities())
+            if (context == null)
+                context = new EKMDemoEntities();
+
+            var authAccess = context.Auths.FirstOrDefault(x => x.AuthType == authType.ToString());
+            if (authAccess == null)
+                throw new RequestErrorException("Auth type does not exist");
+
+            var existingUser = context.SysUsers.FirstOrDefault(x => x.Username == user);
+            if (existingUser != null)
+                throw new RequestErrorException("Username already exists!");
+
+            var userEntity = new SysUser
             {
-                var authAccess = context.Auths.FirstOrDefault(x => x.AuthType == authType.ToString());
-                if (authAccess == null)
-                    throw new RequestErrorException("Auth type does not exist");
+                Username = user,
+                Password = password,
+                AuthID = authAccess.ID
+            };
+            context.SysUsers.Add(userEntity);
+            context.SaveChanges();
+            return userEntity;
 
-                var existingUser = context.SysUsers.FirstOrDefault(x => x.Username == user);
-                if (existingUser != null)
-                    throw new RequestErrorException("Username already exists!");
-
-                var userEntity = new SysUser
-                {
-                    Username = user,
-                    Password = password,
-                    AuthID = authAccess.ID
-                };
-                context.SysUsers.Add(userEntity);
-                context.SaveChanges();
-                return userEntity;
-            }
         }
 
         /// <summary>
@@ -53,26 +61,28 @@ namespace BusinessLogic
         /// <returns>Bool indicating whether login was successful or not</returns>
         public int Login(string userName, string password)
         {
-            using (EKMDemoEntities context = new EKMDemoEntities())
-            {
-                var user = context.SysUsers.FirstOrDefault(x => x.Username == userName);
-                if (user == null || user.Password != password)
-                    return 0;
-                else
-                    return user.ID;
-            }
+            if (context == null)
+                context = new EKMDemoEntities();
+
+            var user = context.SysUsers.FirstOrDefault(x => x.Username == userName);
+            if (user == null || user.Password != password)
+                return 0;
+            else
+                return user.ID;
+
         }
 
         public SysUser GetUserByID(int id)
         {
-            using (EKMDemoEntities context = new EKMDemoEntities())
-            {
-                var user = context.SysUsers.Where(x => x.ID == id).Include("Auth").FirstOrDefault();
-                if (user == null)
-                    throw new RequestErrorException("User ID is not valid");
-                else
-                    return user;
-            }
+            if (context == null)
+                context = new EKMDemoEntities();
+
+            var user = context.SysUsers.Where(x => x.ID == id).Include("Auth").FirstOrDefault();
+            if (user == null)
+                throw new RequestErrorException("User ID is not valid");
+            else
+                return user;
+
         }
     }
 }

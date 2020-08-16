@@ -9,33 +9,41 @@ namespace BusinessLogic
 {
     public class ItemLogic
     {
+        private EKMDemoEntities context = null;
+        public ItemLogic(EKMDemoEntities contextObj = null)
+        {
+                context = contextObj;
+        }
+
         /// <summary>
         /// Given a name, a common item code, a price and a stock, method will create and
         /// return a new item db entity
         /// </summary>
         public Item CreateNewItem(string name, string commonCode, decimal price, int initStock)
         {
-            using (EKMDemoEntities context = new EKMDemoEntities())
+            if (context == null)
+                context = new EKMDemoEntities();
+
+            var newItem = new Item
             {
-                var newItem = new Item
-                {
-                    Name = name,
-                    Stock = initStock,
-                    CommonCode = commonCode,
-                    Price = price
-                };
-                context.Items.Add(newItem);
-                context.SaveChanges();
-                return newItem;
-            }
+                Name = name,
+                Stock = initStock,
+                CommonCode = commonCode,
+                Price = price
+            };
+            context.Items.Add(newItem);
+            context.SaveChanges();
+            return newItem;
+
         }
 
         public List<Item> GetAllItems()
         {
-            using (EKMDemoEntities context = new EKMDemoEntities())
-            {
-                return new List<Item>(context.Items);
-            }
+            if (context == null)
+                context = new EKMDemoEntities();
+
+            return new List<Item>(context.Items);
+
         }
 
         /// <summary>
@@ -44,14 +52,15 @@ namespace BusinessLogic
         /// <exception cref="RequestErrorException">Throws if id provided does not map to a database object</exception>
         public Item GetItemByID(int id)
         {
-            using (EKMDemoEntities context = new EKMDemoEntities())
-            {
-                var item = context.Items.Find(id);
-                if (item == null)
-                    throw new RequestErrorException("Item does not exist");
-                else
-                    return item;
-            }
+            if (context == null)
+                context = new EKMDemoEntities();
+
+            var item = context.Items.Find(id);
+            if (item == null)
+                throw new RequestErrorException("Item does not exist");
+            else
+                return item;
+
         }
 
         /// <summary>
@@ -60,14 +69,15 @@ namespace BusinessLogic
         /// <exception cref="RequestErrorException">Throws when no items are registered with common item code</exception>
         public List<Item> GetItemsByCommonCode(string commonCode)
         {
-            using (EKMDemoEntities context = new EKMDemoEntities())
-            {
-                var items = context.Items.Where(x => x.CommonCode == commonCode);
-                if (items.Count() == 0)
-                    throw new RequestErrorException("No items with that common code");
-                else
-                    return new List<Item>(items.OrderByDescending(x => x.Price));
-            }
+            if (context == null)
+                context = new EKMDemoEntities();
+
+            var items = context.Items.Where(x => x.CommonCode == commonCode);
+            if (items.Count() == 0)
+                throw new RequestErrorException("No items with that common code");
+            else
+                return new List<Item>(items.OrderByDescending(x => x.Price));
+
         }
 
         /// <summary>
@@ -76,14 +86,14 @@ namespace BusinessLogic
         /// <exception cref="RequestErrorException">Throws if id provided does not map to a database object</exception>
         public decimal GetPriceForItem(int itemID)
         {
-            using (EKMDemoEntities context = new EKMDemoEntities())
-            {
-                var item = context.Items.Find(itemID);
-                if (item == null)
-                    throw new RequestErrorException("Item cannot be found");
-                else
-                    return item.Price;
-            }
+            if (context == null)
+                context = new EKMDemoEntities();
+
+            var item = context.Items.Find(itemID);
+            if (item == null)
+                throw new RequestErrorException("Item cannot be found");
+            else
+                return item.Price;
         }
 
         /// <summary>
@@ -92,33 +102,35 @@ namespace BusinessLogic
         /// <exception cref="RequestErrorException">Throws if id provided does not map to a database object</exception>
         public void UpdatePriceForItem(int itemID, decimal newPrice)
         {
-            using (EKMDemoEntities context = new EKMDemoEntities())
+            if (context == null)
+                context = new EKMDemoEntities();
+
+            var item = context.Items.Find(itemID);
+            if (item == null)
+                throw new RequestErrorException("Item cannot be found");
+            else
             {
-                var item = context.Items.Find(itemID);
-                if (item == null)
-                    throw new RequestErrorException("Item cannot be found");
-                else
-                {
-                    item.Price = newPrice;
-                    context.SaveChanges();
-                }
+                item.Price = newPrice;
+                context.SaveChanges();
             }
+
         }
 
         /// <summary>
         /// Given an item ID, will return the stock value of a given item
         /// </summary>
         /// <exception cref="RequestErrorException">Throws if id provided does not map to a database object</exception>
-        public int GetStockForItem(int itemID) 
+        public int GetStockForItem(int itemID)
         {
-            using (EKMDemoEntities context = new EKMDemoEntities())
-            {
-                var item = context.Items.Find(itemID);
-                if (item == null)
-                    throw new RequestErrorException("Item cannot be found");
-                else
-                    return item.Stock;
-            }
+            if (context == null)
+                context = new EKMDemoEntities();
+
+            var item = context.Items.Find(itemID);
+            if (item == null)
+                throw new RequestErrorException("Item cannot be found");
+            else
+                return item.Stock;
+
         }
 
 
@@ -128,36 +140,38 @@ namespace BusinessLogic
         /// <exception cref="RequestErrorException">Throws if id provided does not map to a database object</exception>
         public int AddStockToItem(int itemID, int stockToAdd)
         {
-            using (EKMDemoEntities context = new EKMDemoEntities())
+            if (context == null)
+                context = new EKMDemoEntities();
+
+            var item = context.Items.Find(itemID);
+            if (item == null)
+                throw new RequestErrorException("Item cannot be found");
+            else
             {
-                var item = context.Items.Find(itemID);
-                if (item == null)
-                    throw new RequestErrorException("Item cannot be found");
-                else
-                {
-                    item.Stock += stockToAdd;
-                    context.SaveChanges();
-                    return item.Stock;
-                }
+                item.Stock += stockToAdd;
+                context.SaveChanges();
+                return item.Stock;
             }
+
         }
 
         public int ReduceItemStock(int itemID, int stockToRemove)
         {
-            using (EKMDemoEntities context = new EKMDemoEntities())
+            if (context == null)
+                context = new EKMDemoEntities();
+
+            var item = context.Items.Find(itemID);
+            if (item == null)
+                throw new RequestErrorException("Item cannot be found");
+            else
             {
-                var item = context.Items.Find(itemID);
-                if (item == null)
-                    throw new RequestErrorException("Item cannot be found");
-                else
-                {
-                    if (item.Stock - stockToRemove < 0)
-                        throw new RequestErrorException("Cannot reduce stock to negative quantity");
-                    item.Stock -= stockToRemove;
-                    context.SaveChanges();
-                    return item.Stock;
-                }
+                if (item.Stock - stockToRemove < 0)
+                    throw new RequestErrorException("Cannot reduce stock to negative quantity");
+                item.Stock -= stockToRemove;
+                context.SaveChanges();
+                return item.Stock;
             }
+
         }
 
         /// <summary>
@@ -166,16 +180,16 @@ namespace BusinessLogic
         /// <exception cref="RequestErrorException">Throws if id provided does not map to a database object</exception>
         public void DeleteItem(int itemID)
         {
-            using (EKMDemoEntities context = new EKMDemoEntities())
+            if (context == null)
+                context = new EKMDemoEntities();
+
+            var item = context.Items.Find(itemID);
+            if (item == null)
+                throw new RequestErrorException("Item cannot be found");
+            else
             {
-                var item = context.Items.Find(itemID);
-                if (item == null)
-                    throw new RequestErrorException("Item cannot be found");
-                else
-                {
-                    context.Items.Remove(item);
-                    context.SaveChanges();
-                }
+                context.Items.Remove(item);
+                context.SaveChanges();
             }
         }
     }
